@@ -132,9 +132,7 @@ Outputs
 <p align="center"><img src="2.JPG" width="1000"></p>
 <p align="center"><img src="3.JPG" width="1000"></p>
 <p align="center"><img src="4.JPG" width="1000"></p>
-<p align="center"><img src="5.JPG" width="1000"></p>
-<p align="center"><img src="6.JPG" width="1000"></p>
-<p align="center"><img src="7.JPG" width="1000"></p>
+
 
 
 

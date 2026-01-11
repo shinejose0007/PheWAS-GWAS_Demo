@@ -84,7 +84,6 @@ Run Locally
 ```
 pip install -r requirements.txt
 streamlit run app.py
-
 ```
 
 Nextflow + SLURM Workflow
@@ -97,8 +96,6 @@ Run Locally
 ```
 cd workflows/nextflow
 nextflow run main.nf -profile local
-
-
 ```
 
 Run on SLURM

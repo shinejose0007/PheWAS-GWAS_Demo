@@ -1,45 +1,144 @@
 
-# PheWAS/GWAS Demo – Streamlit Proof-of-Concept
+# PheWAS / GWAS Demo
 
-Kurzbeschreibung
+Reproducible Statistical Genetics Prototype (Python · Streamlit · Nextflow · HPC)
 ----------------
-Dieses Projekt ist ein kompaktes, reproduzierbares Proof-of-Concept, das Fähigkeiten demonstriert, die in der Stellenausschreibung *Statistical Genetics / Machine Learning* (IKMB, Kiel University) gefordert werden. Die App zeigt: Datenaufbereitung, einfache Assoziationsanalysen (per-variant logistic/linear regression), Visualisierungen (Manhattan-like, QQ-Plot), reproduzierbare Workflows (Docker + Skript), und Dokumentation.
+Overview
 
-Inhalte
--------
-- `app.py` – Streamlit-Anwendung (Deutsch), interaktive Demo.
-- `src/assoc.py` – Implementierung von per-variant logistic/linear Regression.
-- `src/generate_data.py` – Erzeugt synthetische Demo-Daten (Genotypen & Phenotype).
-- `data/` – Ort der generierten Demo-Daten.
-- `workflow/run_demo.sh` – Einfaches Workflow-Skript (Demo-Daten erzeugen).
-- `Dockerfile` – Container-Image für reproduzierbaren Betrieb.
-- `requirements.txt` – Python-Abhängigkeiten.
-- `README.md` – Diese Datei.
+This repository contains a reproducible proof-of-concept for statistical genetics and phenome-wide association studies (PheWAS/GWAS), developed as a technical demonstration for PhD-level research in biomedical informatics, statistical genetics, and machine learning.
 
-Mapping zu den Anforderungen (Kurz)
+The project focuses on correctness, reproducibility, and scalability-aware design, rather than raw data size. It combines an interactive Streamlit application for exploratory analysis and teaching with a batch-oriented Nextflow + SLURM workflow suitable for high-performance computing (HPC) environments.
+
+All analyses are performed on synthetic data only.
+
 ----------------------------------
-- **Statistische Genetik / PheWAS/GWAS-Relevanz:** Per-variant Tests (logistic/linear) zeigen Grundprinzipien von Assoziationsstudien. In einer Produktionsumgebung würden PLINK/Hail verwendet werden; hier ist das Prinzip in Python reproduziert.
-- **Pipeline & Reproduzierbarkeit:** Dockerfile + `workflow/run_demo.sh` zeigen Containerisierung und einen einfachen Workflow. Die Struktur ist bereit für Nextflow/Snakemake Integration.
-- **Skalierbarkeit & HPC:** Das Projekt demonstriert die richtige Architektur (modulare Skripte, separate Datengeneratoren, und Konfigurationspunkte) — Nextflow/Snakemake + SLURM-Konfigurationen lassen sich leicht ergänzen.
-- **Software-Engineering:** modularer `src/`-Code, Requirements, und klare README-Dokumentation.
+Key Features
 
-GitHub-Projekte (Erklärung & Link)
+Per-variant association testing (logistic and linear regression)
+
+Phenotype and covariate handling (age, sex)
+
+PheWAS/GWAS-style result inspection
+
+Manhattan-like and QQ plots for quality control
+
+Reproducible Python analysis (NumPy, Pandas, statsmodels)
+
+Interactive Streamlit UI with user authentication (demo purpose)
+
+Batch execution via Nextflow (DSL2)
+
+SLURM-ready workflow configuration
+
+Explicit PLINK and Hail integration stubs for biobank-scale analysis
+
+Project structure
 ---------------------------------
-- `Timeseries_Forecasting_PowerBI` – Zeitreihenaufbereitung, Modelltraining, Evaluation und PowerBI-Integration. Link: https://github.com/shinejose0007/Timeseries_Forecasting_PowerBI
-- `SalesPowerBI` – End-to-end Reporting, Datenmodellierung und DAX-Kennzahlen. Link: https://github.com/shinejose0007/SalesPowerBI
-- `Transaction_analysis` – Explorative Analysen, Aggregationen und ETL-Skripte. Link: https://github.com/shinejose0007/Transaction_analysis
+```
+├── app.py                     # Streamlit application
+├── src/
+│   ├── assoc.py               # Association testing logic
+│   └── generate_data.py       # Synthetic genotype/phenotype generator
+├── stubs/
+│   ├── plink_stub.py          # PLINK GWAS integration (stub)
+│   └── hail_stub.py           # Hail / Spark GWAS integration (stub)
+├── workflows/
+│   ├── nextflow/
+│   │   ├── main.nf
+│   │   ├── nextflow.config
+│   │   └── modules/
+│   │       └── gwas_python.nf
+│   └── slurm/
+│       └── submit.sh
+├── data/                      # Synthetic demo data
+├── results/                   # Analysis outputs
+└── README.md
+```
 
-Wie ausführen (lokal)
+Local Run
 ---------------------
-1. Klonen / Entpacken des Repositories.
-2. (Optional) Container bauen: `docker build -t phewas_demo .`
-3. Container laufen lassen: `docker run --rm -p 8501:8501 phewas_demo`
-4. Oder lokal: `pip install -r requirements.txt` und `streamlit run app.py`
+The Streamlit app (app.py) provides an interactive environment for:
 
+Generating synthetic genotype and phenotype data
+
+Uploading user-provided CSV files
+
+Running per-variant association tests
+
+Inspecting results via tables and diagnostic plots
+
+Downloading results for downstream analysis
+
+Requirements
+---------------------
+```
+streamlit
+pandas
+numpy
+matplotlib
+scipy
+```
+
+Run Locally
+---------------------
+```
+pip install -r requirements.txt
+streamlit run app.py
+
+```
+
+Nextflow + SLURM Workflow
+---------------------
+
+To support reproducible batch execution and HPC scaling, the repository includes a minimal Nextflow DSL2 pipeline.
+
+Run Locally
+---------------------
+```
+cd workflows/nextflow
+nextflow run main.nf -profile local
+
+
+```
+
+Run on SLURM
+---------------------
+```
+nextflow run main.nf -profile slurm
+```
+The workflow reuses the same Python association logic as the Streamlit app, ensuring consistency between exploratory and batch analyses.
+
+PLINK Integration (Stub)
+---------------------
+
+For biobank-scale GWAS, Python-based per-variant testing is not sufficient.
+The file stubs/plink_stub.py documents how genotype and phenotype data would be handed off to PLINK for large-scale association testing (e.g. logistic regression).
+
+The stub prints the exact PLINK command that would be executed on an HPC cluster but does not require real genotype data.
+
+Hail Integration (Stub)
+---------------------
+
+For very large cohorts (100k+ samples), the project is designed to migrate to Hail (Spark-based).
+The file stubs/hail_stub.py documents the intended Hail workflow using MatrixTables and logistic regression, without requiring Spark or real genomic data.
+
+The application includes a minimal login/registration system implemented using Streamlit session state and password hashing. This is intended purely as a demonstration of access control concepts and is not a production authentication system.
 Hinweis
------
-Dieses Projekt verwendet synthetische Daten zu Demonstrationszwecken. Für echte biobank-skalige Analysen sind spezialisierte Formate (BGEN/PLINK/Hail) und zusätzliches QC/Privacy-Handling erforderlich.
 
-Kontakt
--------
-Shine Jose – shine.jose3@gmail.com
+-----
+Outputs
+
+<p align="center"><img src="1.JPG" width="1000"></p>
+<p align="center"><img src="2.JPG" width="1000"></p>
+<p align="center"><img src="3.JPG" width="1000"></p>
+<p align="center"><img src="4.JPG" width="1000"></p>
+<p align="center"><img src="5.JPG" width="1000"></p>
+<p align="center"><img src="6.JPG" width="1000"></p>
+<p align="center"><img src="7.JPG" width="1000"></p>
+
+
+
+**Author:** Shine Jose
+**License:** MIT (see LICENSE file)
+
+This repository is provided as sample educational content by Shine Jose..... Use and modify freely.........
